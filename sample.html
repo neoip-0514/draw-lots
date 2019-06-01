@@ -1,0 +1,76 @@
+<script>
+  function dtString(date) {
+    var _date = date ? date : new Date()
+    var buff = []
+    buff.push(`0${_date.getHours()}`.slice(-2))
+    buff.push(`0${_date.getMinutes()}`.slice(-2))
+    buff.push(`0${_date.getSeconds()}`.slice(-2))
+
+    return buff.join(':')
+  }
+
+  function LOG() {
+    console.log(`${dtString()} ${Array.from(arguments, x => { return typeof x === 'object' ? JSON.stringify(x) : x })}`)
+  }
+
+  function WRN() {
+    console.warn(`${dtString()} ${Array.from(arguments, x => { return typeof x === 'object' ? JSON.stringify(x) : x })}`)
+  }
+
+  function addMinutes(date, val) {
+    var newDate = new Date(date)
+    newDate.setMinutes(newDate.getMinutes() + val)
+    return newDate
+  }
+
+  function addSeconds(date, val) {
+    var newDate = new Date(date)
+    newDate.setSeconds(newDate.getSeconds() + val)
+    return newDate
+  }
+
+  function nextBaseTime() {
+    baseTime = baseTimes.shift()
+  }
+</script>
+<script>
+  var wins = []
+  var count = 0
+  var now = new Date()
+  var baseTimes = [10,15,30].map(x => addSeconds(now, x))
+  var baseTime
+
+  nextBaseTime()
+
+  function checkWinner() {
+    count ++
+    var now = new Date()
+    var apply = {
+      응모수: count,
+      당첨기준시간: dtString(baseTime),
+      결과: '',
+    }
+    // LOG(`당첨기준시간: ${dtString(baseTime)}`)
+    // LOG(`응모수: ${count}`)
+    if (!baseTime) {
+      WRN('꽝(더 이상 참여 불가)')
+      return
+    }
+    if (baseTime < now) {
+      apply.결과 = '당첨 :)'
+      wins.push(apply)
+      WRN(apply)
+      WRN(wins)
+      nextBaseTime()
+    } else {
+      apply.결과 = '꽝 ;('
+      LOG(apply)
+    }
+  }
+
+  LOG('ready')
+</script>
+
+<div>
+<input type="button" onclick="checkWinner()" value="당첨확인">
+</div>
